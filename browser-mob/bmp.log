@@ -10,8 +10,8 @@
 	at sun.nio.ch.ServerSocketChannelImpl.bind(ServerSocketChannelImpl.java:222) ~[?:1.8.0_275]
 	at sun.nio.ch.ServerSocketAdaptor.bind(ServerSocketAdaptor.java:85) ~[?:1.8.0_275]
 	at org.eclipse.jetty.server.nio.SelectChannelConnector.open(SelectChannelConnector.java:162) ~[browsermob-dist-2.1.4.jar:?]
-	at org.eclipse.jetty.server.AbstractConnector.doStart(AbstractConnector.java:356) ~[browsermob-dist-2.1.4.jar:?]
-	at org.eclipse.jetty.server.nio.SelectChannelConnector.doStart(SelectChannelConnector.java:240) ~[browsermob-dist-2.1.4.jar:?]
+	at org.eclipse.jetty.server.AbstractConnector[INFO  2021-01-03T22:41:07,338 org.littleshoot.proxy.impl.DefaultHttpProxyServer] (LittleProxy-JVM-shutdown-hook) Shutting down proxy server immediately (non-graceful) 
+owsermob-dist-2.1.4.jar:?]
 	at org.eclipse.jetty.util.component.AbstractLifeCycle.start(AbstractLifeCycle.java:55) ~[browsermob-dist-2.1.4.jar:?]
 	at org.eclipse.jetty.server.Server.doStart(Server.java:269) ~[browsermob-dist-2.1.4.jar:?]
 	at org.eclipse.jetty.util.component.AbstractLifeCycle.start(AbstractLifeCycle.java:55) ~[browsermob-dist-2.1.4.jar:?]

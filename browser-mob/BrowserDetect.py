@@ -14,7 +14,11 @@ class DetectManager:
     __PARENT_DIR = dirname(dirname(abspath(__file__)))
 
     def detectBrowser(self):
+        """Detect able to browser in system.
 
+        Returns:
+            [str]: [description]
+        """
         for browser in self.__BROWSER_LIST:
             try:
                 self.__defaultBrowser = webbrowser.get(browser).name
