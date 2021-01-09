@@ -10,6 +10,9 @@ import sys
 
 
 __PARENT_DIR = dirname(abspath(__file__))
+sys.path.insert(1, __PARENT_DIR+'/browser-mob')
+from BrowserDetect import DetectManager
+from BmpProxy import ProxyManager
 
 def getFileName(r):
     print(r.headers)
@@ -50,9 +53,10 @@ def download():
     fileName = basename(url2)
     baseName, file_extension = os.path.splitext(fileName)
     with open(fileName, 'wb') as f:
-        print('[*] Downloading test file of size 100 MB...')
         response = requests.get(url2, stream=True)
         total = response.headers.get('content-length')
+        print('[*] Downloading {} file of size {:.2f} MB...'.format(baseName,
+                                                                    int(total)/(1024*1024)))
 
         if total is None:
             f.write(response.content)
@@ -63,11 +67,11 @@ def download():
                 downloaded += len(data)
                 f.write(data)
                 done = int(50*downloaded/total)
-                sys.stdout.write('\r[{}{}]'.format('█' * done, '.' * (50-done)))
+                sys.stdout.write('\r[{}{}]'.format(
+                    '█' * done, '.' * (50-done)))
                 sys.stdout.flush()
     sys.stdout.write('\n')
     print('[*] Done!')
-
 
     # fileName = __PARENT_DIR+"/drivers/chromedriver_linux64.zip"
 
@@ -77,4 +81,14 @@ def download():
         unzip(fileName)
 
 
-download()
+def getLatestRelease():
+    print(requests.get(
+        'https://chromedriver.storage.googleapis.com/LATEST_RELEASE').content.decode('UTF-8'))
+
+
+# download()
+
+# detectManager = DetectManager()
+# detectManager.createDriver()
+# print(detectManager.installedBrowser)
+
