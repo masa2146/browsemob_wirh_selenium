@@ -29,7 +29,7 @@ end
 # unset irrelevant variables
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV "/mnt/WORKS/PythonWorks/Network/venv"
+set -gx VIRTUAL_ENV "/Users/fatih/PycharmProjects/browsemob_wirh_selenium/venv"
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/bin" $PATH

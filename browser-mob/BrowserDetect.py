@@ -1,8 +1,12 @@
 import platform
 from os.path import dirname, abspath
+from os.path import basename
+from os import path
 import  urllib.request
 import urllib
+import tarfile
 from zipfile import ZipFile
+import requests
 import webbrowser
 
 
@@ -10,7 +14,6 @@ class DetectManager:
 
     __BROWSER_LIST = ['google-chrome', 'chrome', 'chromium',
                       'chromium-browser', 'mozilla', 'firefox']
-    __defaultBrowser = ''
     __PARENT_DIR = dirname(dirname(abspath(__file__)))
 
     def detectBrowser(self):
@@ -21,17 +24,17 @@ class DetectManager:
         """
         for browser in self.__BROWSER_LIST:
             try:
-                self.__defaultBrowser = webbrowser.get(browser).name
-                break
-            except Exception:
-                continue
-        return self.__defaultBrowser
+                defaultBrowser = webbrowser.get(browser).name
+                print(defaultBrowser)
+                self.__downloadDriver(defaultBrowser)
+            except Exception as e:
+                print(e)
 
-    def __downloadDriver(self):
-        if self.__defaultBrowser == 'google-chrome' or self.__defaultBrowser == 'chrome' \
-                or self.__defaultBrowser == 'chromium' or self.__defaultBrowser == 'chromium-browser':
+    def __downloadDriver(self,defaultBrowser):
+        if defaultBrowser == 'google-chrome' or defaultBrowser == 'chrome' \
+                or defaultBrowser == 'chromium' or defaultBrowser == 'chromium-browser':
             self.__downloadChromeDriver()
-        elif self.__defaultBrowser == 'mozilla' or self.__defaultBrowser == 'firefox':
+        elif defaultBrowser == 'mozilla' or defaultBrowser == 'firefox':
             self.__downloadGeckoDriver()
 
     def __downloadChromeDriver(self):
@@ -49,9 +52,7 @@ class DetectManager:
                 downloadLink+"/chromedriver_win32.zip", self.__PARENT_DIR+"/drivers")
 
     def __getChromeVersion(self):
-        x = urllib.request.urlopen(
-            'https://chromedriver.storage.googleapis.com/LATEST_RELEASE')
-        return x.read()
+        return requests.get("https://chromedriver.storage.googleapis.com/LATEST_RELEASE").content.decode("UTF-8")
 
     def __downloadGeckoDriver(self):
         systemName = platform.system()
@@ -72,23 +73,53 @@ class DetectManager:
                 file = self.__download(downloadLink+"geckodriver-v0.28.0-win64.zip")
                 self.__unzip(file)
 
-    def __download(self, url):
-        return urllib.request.urlopen(url)
+    
+    def __download(self,url):
+        fileName = basename(url)
+        baseName, file_extension = os.path.splitext(fileName)
+        with open(fileName, 'wb') as f:
+            print('[*] Downloading test file of size 100 MB...')
+            response = requests.get(url2, stream=True)
+            total = response.headers.get('content-length')
 
-    def __unzip(self,file):
-        tempzip = open(self.__PARENT_DIR+"/drivers/temp.zip", "wb")
-        tempzip.write(file.read())
-        tempzip.close()
-        zf = ZipFile(tempzip.name)
-        zf.extractall(path = self.__PARENT_DIR+"/drivers/")
-        zf.close()
+            if total is None:
+                f.write(response.content)
+            else:
+                downloaded = 0
+                total = int(total)
+                for data in response.iter_content(chunk_size=max(int(total/1000), 1024*1024)):
+                    downloaded += len(data)
+                    f.write(data)
+                    done = int(50*downloaded/total)
+                    sys.stdout.write('\r[{}{}]'.format('█' * done, '.' * (50-done)))
+                    sys.stdout.flush()
+        sys.stdout.write('\n')
+        print('[*] Done!')
+
+        if file_extension == '.tar' or file_extension == '.gz':
+            self.__untar(fileName)
+        elif file_extension == '.zip':
+            self.__unzip(fileName)
 
     def __untar(self,file):
-        pass
+        if file.endswith("tar.gz"):
+            tar = tarfile.open(file, "r:gz")
+            tar.extractall(path=self.__PARENT_DIR+"/drivers/")
+            tar.close()
+        elif file.endswith("tar"):
+            tar = tarfile.open(file, "r:")
+            tar.extractall(path=self.__PARENT_DIR+"/drivers/")
+            tar.close()
+        os.remove(file)
+
+
+    def __unzip(self,file):
+        zf = ZipFile(file)
+        zf.extractall(path=self.__PARENT_DIR+"/drivers/")
+        zf.close()
+        os.remove(file)
     
-
-
 
 if __name__ == "__main__":
     detect = DetectManager()
-    print(detect.detectBrowser())
+    detect.detectBrowser()

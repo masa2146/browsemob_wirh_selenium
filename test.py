@@ -77,4 +77,4 @@ def download():
         unzip(fileName)
 
 
-download()
+print(requests.get("https://chromedriver.storage.googleapis.com/LATEST_RELEASE").content.decode("UTF-8"))
